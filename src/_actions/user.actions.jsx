@@ -1,7 +1,6 @@
 import { userConstants } from '../_constants';
 import { userService } from '../_services/user.service';
-//import { alertActions } from './';
-import { history } from '../_helpers';
+import { history } from './../_helpers/history';
 import { alertActions } from './alert.action';
 
 export const userActions = {
@@ -14,12 +13,11 @@ export const userActions = {
 
 function login(username, password, from) {
   return (dispatch) => {
-    dispatch(request({ username }));
-
     userService.login(username, password).then(
       (user) => {
-        dispatch(success(user));
-        history.push(from);
+        dispatch(user_login_success(user));
+        localStorage.setItem('user', user.email);
+        localStorage.setItem('access_token', user.data);
       },
       (error) => {
         dispatch(failure(error.toString()));
@@ -28,10 +26,7 @@ function login(username, password, from) {
     );
   };
 
-  function request(user) {
-    return { type: userConstants.LOGIN_REQUEST, user };
-  }
-  function success(user) {
+  function user_login_success(user) {
     return { type: userConstants.LOGIN_SUCCESS, user };
   }
   function failure(error) {
